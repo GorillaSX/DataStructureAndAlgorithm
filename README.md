@@ -1,2 +1,2 @@
-# DataStructureAndAlgorithm
-A collection of data structure and algorithms, including the solution of Leetcode questions. 
+# Data Structure And Algorithms
+A collection of data structure and algorithms, including solutions of Leetcode questions. 
