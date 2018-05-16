@@ -10,83 +10,40 @@ Examples:
 Credits:
 Special thanks to @davidtan1890 for adding this problem and creating all test cases.
 */
-#include <iostream>
-
 class Solution {
 public:
-    vector<string> calculate(vector<string>&& left, vector<string>&& right)
+    void dfs(string num, int target, vector<string>& result, string prevString, int startPos, long long cumulativeValue, long long preValue, char ops)
     {
-        vector<string> result;
-        for(auto& l : left)
+        if(startPos == num.size())
         {
-            for(auto& r : right)
-            {
-                result.push_back(l + "+" + r);
-                result.push_back(l + "-" + r);
-                result.push_back(l + "*" + r);
-            }
+            if(cumulativeValue == target)
+                result.push_back(prevString);
+            return ;
         }
-        return result;
-    }
-    vector<string> helper(string num, unordered_map<string, vector<string>>& maps)
-    {
-        if(maps.count(num) != 0)
-            return maps[num];
-        vector<string> result;
-        result.push_back(num);
-        for(int i = 1;i < num.size();i++)
+        
+        for(int i = startPos + 1; i <= num.size();i++)
         {
-            vector<string>&& tmp = calculate(helper(num.substr(0,i), maps), helper(num.substr(i), maps));
-            result.insert(result.end(), tmp.begin(), tmp.end());
+            string newStartString = num.substr(startPos, i - startPos);
+            long long newStartValue = stol(newStartString);
+            string newStarts = to_string(newStartValue);
+            if(newStarts.size() != newStartString.size()) continue;
+            dfs(num, target, result, prevString + '+' + newStartString, i, cumulativeValue + newStartValue, newStartValue,  '+');
+            dfs(num, target, result, prevString + '-' + newStartString, i, cumulativeValue - newStartValue, newStartValue,  '-');
+            dfs(num, target, result, prevString + '*' + newStartString, i, (ops == '-' ? cumulativeValue + preValue - preValue * newStartValue: ( ops == '+' ? cumulativeValue - preValue + preValue * newStartValue : preValue * newStartValue)), preValue * newStartValue, ops);
         }
-        maps[num] = result;
-        return result;
-    }
-    pair<bool,int> evaluate(string num)
-    {
-        stack<int> ops;
-        stack<char> op;
-        int i = 0;
-        while(i < num.size())
-        {
-            if(num[i] == '0')
-                return make_pair(false, 0);
-            int value = 0;
-            while(i < nums.size() and num[i] >= '0' and num[i] <= '9')
-            {
-                value = value * 10 + num[i] - '0';
-                i++;
-            }
-            if(op.size() != 0 and op.top() == '*')
-            {
-                int left = ops.top(); ops.pop();
-                op.pop();
-                value *= left;
-            }
-            if(op.size() != 0 and num[i] != '*')
-            {
-                char operation = op.top(); op.pop();
-                int right = ops.top(); ops.pop();
-                int left = ops.top(); ops.pop();
-                ops.push(operation == '+' ? left + right : left - right);
-            }
-            ops.push(value);
-            if(i != num.size())
-                op.push(num[i]);
-        } 
-        if(ops.size() != 0)
-        {
-            char operation = op.top(); op.pop();
-            int right = ops.top(); ops.pop();
-            int left = ops.top(); ops.pop();
-            return make_pair(true, operation == '*' ? left * right : (operation == '+' ? left + right : left - right));
-        }
-        return make_pair(true, ops.top());
+        
     }
     vector<string> addOperators(string num, int target) {
         vector<string> result;
-        unordered_map<string, vector<string>> maps;
-        result = helper(num, maps);
-        return result; 
+        if(num.empty()) return result;
+        for(int i = 1;i <= num.size();i++)
+        {
+            string startString = num.substr(0, i);
+            long long startValue = stol(startString);
+            string startS = to_string(startValue);
+            if(startS.size() != startString.size()) continue;
+            dfs(num, target, result, startString, i, startValue, startValue, '#');
+        }
+        return result;
     }
 };

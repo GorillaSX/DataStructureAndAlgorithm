@@ -45,21 +45,18 @@ Therefore, you can't travel around the circuit once no matter where you start.
 class Solution {
 public:
     int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
-        int start = 0, end = 1, more = 0, startmove = 0, endmove = 0;
+        int start = 0, end = 0, more = 0, startmove = 0, endmove = 0;
         while(endmove != cost.size())
         {
-            if(startmove == cost.size())
-                return -1;
             more = more + gas[end] - cost[end];
             endmove++;
             while(more < 0)
             {
                 more = more + cost[start] - gas[start];
-                startmove++;
                 endmove--;
                 start++;
                 if(start == cost.size())
-                    start = 0;
+                    return -1;
             }
             end++;
             if(end == cost.size())
