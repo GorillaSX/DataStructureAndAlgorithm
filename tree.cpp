@@ -597,6 +597,7 @@ class Solution
 };
 
 //Segment Tree
+// Find the range sum
 class SegmentTree
 {
     SegmentTree(vector<int> input)
@@ -661,6 +662,69 @@ private:
     vector<int> Tree;
     vector<int> Array;
 };
+//Find range minimum/maximum 
+//Build is O(n), query O(logn)
+class RMSegmentTree
+{
+    public:
+    RMSegmentTree(vector<int> input):m_data(input)
+    {
+        //Be careful at the size of segment tree
+        int n = input.size();
+        int height = int(ceil(log2(n)));
+        int size = 2 * int(pow(2, height)) - 1;
+        m_tree = vector<int>(size, 0);
+        build(1, 0, n-1);
+    }
+    void build(int node, int start, int end)
+    {
+        if(start == end)
+        {
+            m_tree[node] = m_data[start];
+        }
+        else 
+        {
+            int mid = (start + end) / 2;
+            build(2 * node, start, mid);
+            build(2 * node + 1, mid + 1, end);
+            m_tree[node] = min(m_data[2 * node], m_data[2 * node + 1]);
+        }
+    }
+    void update(int node, int start, int end, int index, int val)
+    {
+        if(start == end)
+        {
+            m_tree[node] = val;
+            m_data[index] = val;
+        }
+        else 
+        {
+            int mid = (start + end) / 2;
+            if(index >= start && index <= mid)
+                update(2 * node, start, mid, index, val);
+            else 
+                update(2 * node + 1, mid + 1, end, index, val);
+            m_tree[node] = min(m_tree[2*node] , m_tree[2*node+ 1]);
+        }
+    }
+    int query(int node, int start, int end, int l, int r)
+    {
+        if(l <= start && r >= end)
+        {
+            return m_tree[node];
+        }
+        else if(l > end || r < start)
+            return INT_MAX;
+        else 
+        {
+            int mid = (start + end) / 2;
+            return min(query(2*node, start, mid, l, r), query(2 * node + 1, mid + 1, end, l, r));
+        }
+    }
+    private:
+    vector<int> m_tree;
+    vector<int> m_data;
+}
 
 
 //A Tree, which node is a range
