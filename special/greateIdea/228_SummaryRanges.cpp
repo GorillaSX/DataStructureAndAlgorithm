@@ -23,7 +23,7 @@ public:
         {
            if(i == nums.size() - 1)
            {
-                start = start + to_string(nums[i]);
+               start = start + to_string(nums[i]);
                result.push_back(start);
                return result;
            }
